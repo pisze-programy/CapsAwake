@@ -38,7 +38,10 @@ finalize() {
 
   echo "==> verify"
   codesign --verify --deep --strict "$APP"
-  spctl --assess --type open --verbose=2 "$APP"
+  xcrun stapler validate "$DMG"
+  # Local files have no quarantine, so spctl can report "Insufficient Context";
+  # the authoritative proof is the notarytool "Accepted" status + the staple.
+  spctl --assess --type open --verbose=4 "$DMG" 2>&1 | grep -q accepted && echo "spctl: accepted"
 
   echo "DMG ready: $DMG"
 

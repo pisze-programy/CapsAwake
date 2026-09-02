@@ -67,8 +67,6 @@ targets:
               <key>MachServices</key><dict><key>'"${HELPER_ID}"'</key><true/></dict>
               <key>AssociatedBundleIdentifiers</key><array><string>'"${APP_ID}"'</string></array>
               <key>EnvironmentVariables</key><dict><key>CAPSAWAKE_MACH_LABEL</key><string>'"${HELPER_ID}"'</string></dict>
-              <key>StandardOutPath</key><string>/Library/Logs/CapsAwake/helper-stdout.log</string>
-              <key>StandardErrorPath</key><string>/Library/Logs/CapsAwake/helper-stderr.log</string>
           </dict>
           </plist>' > "$PLIST"
           plutil -lint "$PLIST"

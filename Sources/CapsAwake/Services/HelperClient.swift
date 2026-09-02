@@ -37,33 +37,43 @@ final class HelperClient {
         SMAppService.openSystemSettingsLoginItems()
     }
 
-    /// After an app update the helper binary is re-signed and the existing
-    /// launchd job holds a stale launch record; launchd then refuses to exec
-    /// the new binary and XPC calls hang forever. Fix: when the build changed
-    /// and the daemon looks enabled but does not answer, unregister and
-    /// register fresh. Do not disturb healthy installs.
+    /// Full re-registration: unregister (boots the stale job) then register
+    /// fresh. Needed after an app update or when the daemon reports enabled but
+    /// no process answers — launchd holds a dead job and a plain register()
+    /// does not clear it. Completion arrives on the main queue.
+    func reregister(completion: @escaping () -> Void) {
+        let daemon = service
+        daemon.unregister { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                do {
+                    try daemon.register()
+                } catch {
+                    // Survived by the engine's retry path; status will surface it.
+                }
+                completion()
+            }
+        }
+    }
+
+    /// Ensure the registered daemon actually answers. If it is enabled but the
+    /// launchd job died (e.g. after an installer booted it out), re-register so
+    /// a fresh helper starts.
     func reconcileAfterInstallIfNeeded(completion: @escaping () -> Void) {
         let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
-        guard daemonStatus == .enabled,
-              defaults.string(forKey: Self.lastBuildKey) != currentBuild else {
+        guard daemonStatus == .enabled else {
             defaults.set(currentBuild, forKey: Self.lastBuildKey)
             completion()
             return
         }
-
         checkReachable { reachable in
             if reachable {
                 self.defaults.set(currentBuild, forKey: Self.lastBuildKey)
                 completion()
                 return
             }
-            self.service.unregister { _ in
-                // Give launchd/BTM a moment to drop the old job before re-adding.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    do { try self.service.register() } catch { /* surfaced by status later */ }
-                    self.defaults.set(currentBuild, forKey: Self.lastBuildKey)
-                    completion()
-                }
+            self.reregister {
+                self.defaults.set(currentBuild, forKey: Self.lastBuildKey)
+                completion()
             }
         }
     }

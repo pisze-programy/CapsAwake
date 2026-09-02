@@ -63,10 +63,7 @@ final class HelperService: NSObject, KeepAwakeHelperProtocol {
     func setKeepAwake(_ enabled: Bool, withReply reply: @escaping (Bool, String?) -> Void) {
         stateQueue.async { [self] in
             let outcome = Self.runPmset(disableSleep: enabled)
-            if outcome.succeeded {
-                lastHeartbeat = Date()
-                log.info("set disablesleep=\(enabled ? "1" : "0") ok")
-            } else {
+            guard outcome.succeeded else {
                 let detail = outcome.stderr.isEmpty
                     ? "pmset exited \(outcome.status)"
                     : outcome.stderr
@@ -74,7 +71,16 @@ final class HelperService: NSObject, KeepAwakeHelperProtocol {
                 reply(false, detail)
                 return
             }
-            reply(true, nil)
+            // Reply ok only when the flag actually landed; a bare exit 0 can lie.
+            let applied = Self.currentFlagIsEnabled() == enabled
+            if applied {
+                lastHeartbeat = Date()
+                log.info("set disablesleep=\(enabled ? "1" : "0") ok")
+                reply(true, nil)
+            } else {
+                log.error("set disablesleep=\(enabled ? "1" : "0") not confirmed")
+                reply(false, "SleepDisabled not confirmed after write")
+            }
         }
     }
 

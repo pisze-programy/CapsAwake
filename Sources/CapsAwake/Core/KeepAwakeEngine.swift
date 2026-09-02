@@ -53,6 +53,10 @@ final class KeepAwakeEngine {
     private var applying = false
     private var writeGeneration = 0
     private var lastWriteFailed = false
+    /// Target of the last successful write. Used to keep the watchdog fed while
+    /// we intend to hold even if a verification read races.
+    private var intentOn = false
+    private var lastWriteFinishedAt = Date.distantPast
 
     private var nextWriteAt = Date.distantPast
     private var nextReadAt = Date.distantPast
@@ -65,6 +69,7 @@ final class KeepAwakeEngine {
     private var didOfferApproval = false
     private var lastDisplay: DisplayState?
     private var lastLoggedHealth: SMAppService.Status?
+    private var nextRepairAt = Date.distantPast
 
     private let unreadableCapsGrace: TimeInterval = 2
 
@@ -167,25 +172,40 @@ final class KeepAwakeEngine {
         let status = client.daemonStatus
         if status != lastLoggedHealth {
             lastLoggedHealth = status
-            AppLog.info("helper status: \(String(describing: status))")
+            AppLog.info("helper status: \(Self.statusName(status))")
         }
         switch status {
-        case .notRegistered:
+        case .notRegistered, .notFound:
+            // notFound is the OS reporting a stale registration (e.g. after the
+            // helper plist changed); re-registering is the repair path.
             if now >= nextRegisterAt {
                 nextRegisterAt = now + 5
-                do { try client.registerDaemon() } catch { /* retried on cadence */ }
+                do {
+                    try client.registerDaemon()
+                    AppLog.info("daemon register attempted")
+                } catch {
+                    AppLog.error("daemon register failed: \(error.localizedDescription)")
+                }
             }
         case .requiresApproval:
             if !didOfferApproval {
                 didOfferApproval = true
                 client.openSystemSettingsForApproval()
             }
-        case .notFound:
-            break // surfaced by the error dot; reinstall required
         case .enabled:
             break
         @unknown default:
             break
+        }
+    }
+
+    private static func statusName(_ status: SMAppService.Status) -> String {
+        switch status {
+        case .notRegistered: return "notRegistered"
+        case .enabled: return "enabled"
+        case .requiresApproval: return "requiresApproval"
+        case .notFound: return "notFound"
+        @unknown default: return "unknown"
         }
     }
 
@@ -238,15 +258,16 @@ final class KeepAwakeEngine {
         writeGeneration += 1
         let generation = writeGeneration
         nextWriteAt = .distantFuture
-        let started = Date()
         AppLog.info("writing disablesleep=\(enabled ? "1" : "0") (gen \(generation))")
 
         client.setKeepAwake(enabled) { [weak self] ok, error in
             guard let self, self.writeGeneration == generation else { return }
             self.applying = false
             let now = Date()
+            self.lastWriteFinishedAt = now
             if ok {
                 self.lastWriteFailed = false
+                self.intentOn = enabled
                 AppLog.info("write ok (gen \(generation))")
                 // Immediate post-write verification; never trust a bare exit 0.
                 self.lastFlag = self.readFlag()
@@ -256,22 +277,39 @@ final class KeepAwakeEngine {
                 case .unknown:
                     self.nextReadAt = now + 1
                 }
-                self.nextHeartbeatAt = started
+                // Allow a follow-up write if the app-side read still disagrees
+                // (helper confirmed the flag, so any mismatch is a race, not a
+                // failure — but keep reconciling instead of wedging forever).
+                let appSideConfirmed = enabled == (self.lastFlag == .enabled)
+                self.nextWriteAt = appSideConfirmed
+                    ? .distantPast
+                    : now + 2
                 self.render(now: now, want: self.currentWant(now: now))
             } else {
                 self.lastWriteFailed = true
                 self.nextWriteAt = now + CapsAwakeDefaults.retryInterval
                 self.nextReadAt = now + 2
                 AppLog.error("write failed (gen \(generation)): \(error ?? "no detail")")
+                // Log evidence: daemon is .enabled but no process answers the
+                // Mach service (e.g. install booted the job out). Re-register
+                // to resurrect it, throttled so a dead daemon cannot hammer.
+                if self.client.daemonStatus == .enabled, now >= self.nextRepairAt {
+                    self.nextRepairAt = now + 20
+                    AppLog.warning("repairing helper: dead job, re-registering")
+                    self.client.reregister {}
+                }
                 self.render(now: now, want: self.currentWant(now: now))
             }
         }
     }
 
     private func sendHeartbeatIfNeeded(now: Date, want: Bool) {
-        // Heartbeat only while the flag is (supposed to be) on. The helper
-        // restores sleep if it ever stops hearing from us.
-        guard want, lastFlag == .enabled else { return }
+        // Heartbeat while we intend to hold, or while the flag is still on.
+        // Keeps the helper watchdog from clearing a flag that is really set
+        // just because a verification read raced. The helper still restores
+        // sleep if the app ever goes silent for real.
+        let shouldHold = intentOn || lastFlag == .enabled
+        guard !safetyHold, shouldHold else { return }
         guard now >= nextHeartbeatAt else { return }
         nextHeartbeatAt = now + CapsAwakeDefaults.heartbeatInterval
         client.heartbeat()
@@ -291,6 +329,11 @@ final class KeepAwakeEngine {
             state = DisplayState(dot: .error, tooltip: Config.tooltipFailed, alert: nil)
         } else if want && lastFlag == .enabled {
             state = DisplayState(dot: .on, tooltip: Config.tooltipOn, alert: nil)
+        } else if want, lastFlag != .enabled,
+                  now.timeIntervalSince(lastWriteFinishedAt) < 3 {
+            // Very recent write whose read-back raced: keep it grey and quiet,
+            // the reconciliation loop re-checks within a couple of seconds.
+            state = DisplayState(dot: .off, tooltip: Config.tooltipPending, alert: nil)
         } else if want && !applying {
             state = DisplayState(dot: .error, tooltip: Config.tooltipFailed, alert: .applyFailed)
         } else if want {

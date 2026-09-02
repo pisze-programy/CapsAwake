@@ -1,28 +1,49 @@
-# CapsAwake
+<p align="center">
+  <img src="assets/logo.png" width="110" alt="CapsAwake logo">
+</p>
 
-Caps Lock is the physical keep-awake switch for your MacBook.
+<h1 align="center">CapsAwake</h1>
 
-Turn Caps Lock on and the Mac keeps working with the lid closed. Turn it off and normal sleep returns. The menu-bar dot shows the state: green means the Mac will not sleep, grey means normal sleep, red means something is wrong (hover the dot for the reason).
+<p align="center">
+  <strong>Caps Lock · keep awake · even with the lid closed</strong>
+</p>
 
-Made for AI agents, long builds, and remote sessions.
+<br>
+
+<p align="center">
+  Turn Caps Lock on. Your Mac stays awake.<br>
+  Turn it off. Normal sleep returns.
+</p>
+
+---
+
+## What it does
+
+macOS puts a MacBook to sleep when you close the lid. That stops agents, builds, downloads, and SSH sessions.
+
+CapsAwake makes Caps Lock the switch for that sleep:
+
+- **Caps Lock ON** — the Mac does not sleep. The lid can be closed. Work continues.
+- **Caps Lock OFF** — normal sleep behavior.
+
+The menu-bar dot shows the state:
+
+- Green — sleep is disabled. The Mac stays awake.
+- Grey — normal sleep.
+- Red — something is wrong. Move the cursor over the dot for the reason.
 
 ## How it works
 
-Closing a MacBook lid normally sleeps the Mac. The only reliable override on Apple Silicon is the system `SleepDisabled` flag — what `sudo pmset -a disablesleep 1` sets. Ordinary keep-awake assertions (`caffeinate`) do not cover lid-close sleep.
+CapsAwake has two parts:
 
-CapsAwake cannot set that flag from a sandbox, so it is not on the Mac App Store. Instead the app ships with a small privileged helper:
+1. **CapsAwake.app** — a small menu-bar app. It reads Caps Lock and the system sleep flag.
+2. **CapsAwakeHelper** — a small root process. It runs one command: `pmset -a disablesleep 1|0`. This is the only way to keep a closed-lid MacBook awake.
 
-- `CapsAwake.app` runs as a normal user. It reads Caps Lock (IOKit HID, no permissions) and the flag (`pmset -g`) every poll.
-- `CapsAwakeHelper` is a root launchd daemon embedded in the app and registered through `SMAppService`. The only thing it does is run `pmset -a disablesleep 1|0`. The app talks to it over XPC; the daemon accepts calls only from this app, signed by this team.
-- The daemon runs a watchdog. The app heartbeats every 30 seconds. If the app dies while the flag is on, the daemon restores normal sleep within 90 seconds. The watchdog reads the real flag, so it also survives a daemon restart.
+The helper runs a watchdog. The app pings it every 30 seconds. If the app dies, the helper restores normal sleep within 90 seconds.
 
-Launch-at-login is enabled by default on first launch.
+## Why it is not on the App Store
 
-## Requirements
-
-- Apple Silicon MacBook, macOS 14 or later.
-- Xcode command line tools (to build).
-- An Apple Development certificate in your keychain to sign the helper (team `3UKH2QRFKZ`). Open Xcode once to install it if signing fails.
+The Mac App Store requires a sandbox. A sandboxed app cannot run a root helper or disable system sleep. Apple does not allow this mechanism in the App Store or TestFlight. So CapsAwake ships as a signed and notarized app, outside the App Store.
 
 ## Install
 
@@ -30,45 +51,40 @@ Launch-at-login is enabled by default on first launch.
 ./scripts/install.sh
 ```
 
-This builds and signs the app, installs it to `/Applications`, and launches it once. The first launch registers the helper. macOS may ask you to approve it in **System Settings → General → Login Items & Extensions**; the app offers to open that page.
+What happens:
 
-### Run from Xcode
+1. The script builds and signs the app.
+2. It installs the app to `/Applications`.
+3. It asks for your password once.
+4. It opens the app.
 
-Open `CapsAwake.xcodeproj` (or generate it with `xcodegen generate`). Pick the `CapsAwake` scheme and run. The helper registers only when the app runs from `/Applications`, so use the install script for a full test.
+On first launch, macOS may ask you to allow the helper. Open **System Settings → General → Login Items & Extensions** and allow CapsAwake.
+
+CapsAwake starts at login. This is the default.
+
+## Requirements
+
+- Apple silicon MacBook
+- macOS 14 or later
+- Xcode (to build)
+- An Apple Development certificate in your keychain
 
 ## Use
 
-- Caps Lock **on** → the Mac stays awake, lid open or closed. Green dot.
-- Caps Lock **off** → normal sleep. Grey dot.
-- Right-click the dot → Quit.
+- Turn Caps Lock on to keep the Mac awake.
+- Turn Caps Lock off to restore normal sleep.
+- Right-click the dot to quit.
 
-The dot is green only when the system flag is confirmed on. If the helper is missing, not approved, or failing, the dot turns red and an alert explains what to do.
+The green dot appears only when the system confirms sleep is disabled.
 
 ### Safety
 
-A Mac left running in a bag gets hot and drains the battery. CapsAwake turns itself off automatically when:
+A Mac that stays awake gets hot and drains the battery. CapsAwake turns itself off when:
 
-- the battery drops below 15% while unplugged, or
-- the Mac hits critical thermal pressure.
+- the battery drops to 15% while unplugged, or
+- the Mac is under critical thermal pressure.
 
-Turn Caps Lock off and on to retry once conditions are safe.
-
-### Notes
-
-- Sleep prevention is system-wide while active. A reboot always clears the flag.
-- If a remote desktop client syncs Caps Lock to your Mac, it also turns the switch. Closing the lid does not change this.
-- Quitting restores normal sleep. If the app is force-killed, the helper watchdog restores sleep within ~90 seconds.
-
-## Logs
-
-- App: `~/Library/Logs/CapsAwake/capsawake.log`
-- Helper: `/Library/Logs/CapsAwake/helper-stderr.log`
-
-Check the flag from a terminal:
-
-```sh
-pmset -g | grep SleepDisabled
-```
+Turn Caps Lock off, then on, to retry.
 
 ## Uninstall
 
@@ -76,23 +92,45 @@ pmset -g | grep SleepDisabled
 ./scripts/uninstall.sh
 ```
 
-This stops the app, unloads the helper, clears the flag, and removes the app.
+This stops the app, unloads the helper, clears the sleep flag, and removes the app.
 
-## Layout
+## Logs
 
+- App log: `~/Library/Logs/CapsAwake/capsawake.log`
+- Check the flag:
+
+```sh
+pmset -g | grep SleepDisabled
 ```
-Sources/CapsAwake/        menu-bar app
-  App/                    lifecycle, status item
-  Core/                   decision engine
-  Hardware/               Caps Lock + flag readers
-  Services/               helper XPC client, login item
-  Support/                config, logging
-Sources/CapsAwakeHelper/  root daemon
-Sources/CapsAwakeShared/  parsers, policies, protocol, identity
-Tests/CapsAwakeTests/     unit tests
-scripts/                  build, install, uninstall
+
+If the flag shows `1`, sleep is disabled. If the app was force-quit, the helper clears the flag within about 90 seconds.
+
+## Build from source
+
+```sh
+xcodegen generate
+./scripts/build-app.sh        # builds and signs CapsAwake.app
 ```
+
+Run the tests:
+
+```sh
+xcodebuild -project CapsAwake.xcodeproj -scheme CapsAwake test
+```
+
+## Release
+
+Build a notarized DMG:
+
+```sh
+./scripts/release.sh 0.1.0
+```
+
+Prerequisites:
+
+- A Developer ID Application certificate in the keychain.
+- Notary credentials: `xcrun notarytool store-credentials CAPSAWAKE_NOTARY ...`
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+[MIT](LICENSE)

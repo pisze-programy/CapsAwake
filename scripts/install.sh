@@ -14,7 +14,7 @@ APP_BUNDLE="/Applications/$APP_NAME.app"
 LOG_DIR="/Library/Logs/CapsAwake"
 
 echo "==> building signed app"
-BUILT="$("$ROOT_DIR/scripts/build-app.sh")"
+BUILT="$("$ROOT_DIR/scripts/build-app.sh" | /usr/bin/tail -1)"
 
 echo "==> stopping running instance (so the new binary is the one that starts)"
 /usr/bin/pkill -x "$APP_NAME" 2>/dev/null || true

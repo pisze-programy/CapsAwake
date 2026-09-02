@@ -1,0 +1,120 @@
+name: CapsAwake
+options:
+  bundleIdPrefix: com.piszeprogramy
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: 3UKH2QRFKZ
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  CapsAwakeShared:
+    type: framework
+    platform: macOS
+    sources:
+      - path: Sources/CapsAwakeShared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.piszeprogramy.capsawake.shared
+        # Static framework: linked into app/helper/tests, never embedded into a
+        # bundle (a daemon in Contents/MacOS cannot use @rpath Frameworks).
+        MACH_O_TYPE: staticlib
+        SKIP_INSTALL: YES
+
+  CapsAwake:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/CapsAwake
+        excludes:
+          - Info.plist
+      - path: Resources
+    settings:
+      base:
+        PRODUCT_NAME: CapsAwake
+        PRODUCT_BUNDLE_IDENTIFIER: com.piszeprogramy.capsawake
+        INFOPLIST_FILE: Sources/CapsAwake/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ENABLE_HARDENED_RUNTIME: YES
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+    dependencies:
+      - target: CapsAwakeShared
+        embed: false
+      - target: CapsAwakeHelper
+        copy:
+          destination: executables
+    postBuildScripts:
+      - name: Generate helper LaunchDaemon plist
+        basedOnDependencyAnalysis: false
+        script: |
+          set -euo pipefail
+          APP_ID="${PRODUCT_BUNDLE_IDENTIFIER}"
+          HELPER_ID="${APP_ID}.helper"
+          DEST="${CODESIGNING_FOLDER_PATH}/Contents/Library/LaunchDaemons"
+          mkdir -p "$DEST"
+          PLIST="${DEST}/${HELPER_ID}.plist"
+          printf '%s' '<?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>Label</key><string>'"${HELPER_ID}"'</string>
+              <key>BundleProgram</key><string>Contents/MacOS/CapsAwakeHelper</string>
+              <key>MachServices</key><dict><key>'"${HELPER_ID}"'</key><true/></dict>
+              <key>AssociatedBundleIdentifiers</key><array><string>'"${APP_ID}"'</string></array>
+              <key>EnvironmentVariables</key><dict><key>CAPSAWAKE_MACH_LABEL</key><string>'"${HELPER_ID}"'</string></dict>
+              <key>StandardOutPath</key><string>/Library/Logs/CapsAwake/helper-stdout.log</string>
+              <key>StandardErrorPath</key><string>/Library/Logs/CapsAwake/helper-stderr.log</string>
+          </dict>
+          </plist>' > "$PLIST"
+          plutil -lint "$PLIST"
+
+  CapsAwakeHelper:
+    type: tool
+    platform: macOS
+    sources:
+      - path: Sources/CapsAwakeHelper
+        excludes:
+          - Info.plist
+    dependencies:
+      - target: CapsAwakeShared
+        embed: false
+    settings:
+      base:
+        PRODUCT_NAME: CapsAwakeHelper
+        PRODUCT_BUNDLE_IDENTIFIER: com.piszeprogramy.capsawake.helper
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES
+        # The daemon needs code identity embedded in the binary, or launchd
+        # refuses to exec it ("could not find and/or execute program").
+        GENERATE_INFOPLIST_FILE: YES
+        CREATE_INFOPLIST_SECTION_IN_BINARY: YES
+
+  CapsAwakeTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests/CapsAwakeTests
+    dependencies:
+      - target: CapsAwakeShared
+        embed: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.piszeprogramy.capsawake.tests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  CapsAwake:
+    build:
+      targets:
+        CapsAwake: all
+        CapsAwakeTests: [test]
+    run:
+      config: Debug
+    test:
+      targets:
+        - CapsAwakeTests

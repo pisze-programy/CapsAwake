@@ -1,0 +1,9 @@
+.build/
+.swiftpm/
+.derived/
+dist/
+DerivedData/
+.DS_Store
+.derived/
+dist/
+.build/

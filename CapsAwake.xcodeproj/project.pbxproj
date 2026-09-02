@@ -1,0 +1,891 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		09BB5A09A71C3EAF2AACBCFD /* StatusItemDotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52610C3DD8ADD219641B722A /* StatusItemDotView.swift */; };
+		0F2775E1EDF51FBFCE07AA34 /* SafetyPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44D33A8CBBF3C5D64CE26071 /* SafetyPolicyTests.swift */; };
+		18D752FD162210513A5ABC59 /* CapsAwakeShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E00589E25654D23BE501C212 /* CapsAwakeShared.framework */; };
+		18DF9E7CF76C20077C6372C0 /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E4841A7FC7E33B8BA51AB4A /* Identity.swift */; };
+		1CD7596FBF7236F0FCE311E8 /* Pmset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11000819966E6EFCD9469C22 /* Pmset.swift */; };
+		23F6D9DCA78158B4946AE436 /* LoginItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90ABFD9BA7C1E8DC6313E7C /* LoginItems.swift */; };
+		2A1A2AC43AB0A1A39C9CF211 /* KeepAwakeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BA607DC1EA5E579A29822B /* KeepAwakeEngine.swift */; };
+		36657D37FF2859C5687C3E66 /* HelperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185914A4AFDD306588A0F39C /* HelperService.swift */; };
+		4CB377316AF10910E6C01B56 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5F9A95B1F1B4D0111A254925 /* AppIcon.icns */; };
+		556E336B003983344C5B41AB /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB83805C8ED87E151EC0E9C /* main.swift */; };
+		5BC498CA37A0F0FE693CC60C /* SleepFlagReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9ED42EE4F6AAEB8451E9034 /* SleepFlagReader.swift */; };
+		65D01AD8589D1AEBB43F2AAC /* CapsAwakeShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E00589E25654D23BE501C212 /* CapsAwakeShared.framework */; };
+		6824C23E1B1EF1A72BEF4454 /* CapsAwakeHelper in Embed Dependencies */ = {isa = PBXBuildFile; fileRef = 2D4D2F52372CDBA34A5C901F /* CapsAwakeHelper */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		72CBEA245B9325676223444C /* PmsetParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521F0930036B66058FA897FC /* PmsetParsingTests.swift */; };
+		7A085FF8AFD8469FB0BA40E1 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB665E6A73C94D2F3F39C1F6 /* Defaults.swift */; };
+		7C8D667E0E1CC9EA8290E8EB /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7573E195E3C92F01951608A /* main.swift */; };
+		83F73D490342F7EF85422667 /* CapsAwakeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE970CFACD0A127592AC9DE9 /* CapsAwakeApp.swift */; };
+		8591711B01C0E5354BE5BA76 /* KeepAwakeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E0E2C56C4899DABC5197A1 /* KeepAwakeProtocol.swift */; };
+		8EBCE18F259EC50F166B4D19 /* HelperClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F2B34F80051D3BAD9B26F9 /* HelperClient.swift */; };
+		A336EA18C5C2DDF24863BFE9 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31FD403314B6D59F1C50AF3D /* Config.swift */; };
+		A4D21D4F17E2EE93C3A8F794 /* CapsLockProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9360B8C80CF9271997C7F4 /* CapsLockProbe.swift */; };
+		A4DA263AA3818C8F0064ECB6 /* SafetyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C34B63DD1582959E024F4E5 /* SafetyPolicy.swift */; };
+		A7DCAE6E5F0C5006B5A6BF42 /* WatchdogPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15166D56675DF7F6D1814E3 /* WatchdogPolicyTests.swift */; };
+		B3DE18F91AF88ADC5CEE2BDD /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F27A9A3D216E1E33036903B5 /* AppLog.swift */; };
+		B61B9B5EC746CB865859C62A /* ProcessRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49DE4CE647027EBD2E8A45B /* ProcessRunner.swift */; };
+		C973B3A0AFA1D540106C5936 /* CapsAwakeShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E00589E25654D23BE501C212 /* CapsAwakeShared.framework */; };
+		F0558646AAC29C32199A6FE1 /* WatchdogPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0110B11791950BF9E106B00E /* WatchdogPolicy.swift */; };
+		FE17616903D55D1B2EBA9900 /* IdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C9A1AC9F9075D7807AC9B9 /* IdentityTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3C2C0910168226A818C4B9FB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D70AAB0852942E5CDB3264B2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5D7E14A0A58698353EBAB62F;
+			remoteInfo = CapsAwakeShared;
+		};
+		6D9DE657D14C04D3B58200E5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D70AAB0852942E5CDB3264B2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5D7E14A0A58698353EBAB62F;
+			remoteInfo = CapsAwakeShared;
+		};
+		999BBF34756BD32BDB3B8BED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D70AAB0852942E5CDB3264B2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5D7E14A0A58698353EBAB62F;
+			remoteInfo = CapsAwakeShared;
+		};
+		EC13FCFD09449387B8467AD0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D70AAB0852942E5CDB3264B2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B17A2A165A2E6D1EEAEE97C4;
+			remoteInfo = CapsAwakeHelper;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A608C5336E2A86364E0EFDF5 /* Embed Dependencies */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				6824C23E1B1EF1A72BEF4454 /* CapsAwakeHelper in Embed Dependencies */,
+			);
+			name = "Embed Dependencies";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0110B11791950BF9E106B00E /* WatchdogPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchdogPolicy.swift; sourceTree = "<group>"; };
+		11000819966E6EFCD9469C22 /* Pmset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pmset.swift; sourceTree = "<group>"; };
+		185914A4AFDD306588A0F39C /* HelperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperService.swift; sourceTree = "<group>"; };
+		18E0E2C56C4899DABC5197A1 /* KeepAwakeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepAwakeProtocol.swift; sourceTree = "<group>"; };
+		1D9360B8C80CF9271997C7F4 /* CapsLockProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsLockProbe.swift; sourceTree = "<group>"; };
+		2D4D2F52372CDBA34A5C901F /* CapsAwakeHelper */ = {isa = PBXFileReference; includeInIndex = 0; path = CapsAwakeHelper; sourceTree = BUILT_PRODUCTS_DIR; };
+		31FD403314B6D59F1C50AF3D /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		43BA607DC1EA5E579A29822B /* KeepAwakeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepAwakeEngine.swift; sourceTree = "<group>"; };
+		44D33A8CBBF3C5D64CE26071 /* SafetyPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyPolicyTests.swift; sourceTree = "<group>"; };
+		4E4841A7FC7E33B8BA51AB4A /* Identity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
+		521F0930036B66058FA897FC /* PmsetParsingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PmsetParsingTests.swift; sourceTree = "<group>"; };
+		52610C3DD8ADD219641B722A /* StatusItemDotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemDotView.swift; sourceTree = "<group>"; };
+		5C34B63DD1582959E024F4E5 /* SafetyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyPolicy.swift; sourceTree = "<group>"; };
+		5F9A95B1F1B4D0111A254925 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		63F2B34F80051D3BAD9B26F9 /* HelperClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperClient.swift; sourceTree = "<group>"; };
+		6DF9507C543AA8B64738C0F1 /* CapsAwakeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CapsAwakeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7494837A894F970DBE0B3A17 /* CapsAwake.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CapsAwake.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BB83805C8ED87E151EC0E9C /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		90C9A1AC9F9075D7807AC9B9 /* IdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityTests.swift; sourceTree = "<group>"; };
+		A90ABFD9BA7C1E8DC6313E7C /* LoginItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItems.swift; sourceTree = "<group>"; };
+		B49DE4CE647027EBD2E8A45B /* ProcessRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessRunner.swift; sourceTree = "<group>"; };
+		D9ED42EE4F6AAEB8451E9034 /* SleepFlagReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepFlagReader.swift; sourceTree = "<group>"; };
+		E00589E25654D23BE501C212 /* CapsAwakeShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CapsAwakeShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E15166D56675DF7F6D1814E3 /* WatchdogPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchdogPolicyTests.swift; sourceTree = "<group>"; };
+		E7573E195E3C92F01951608A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		EB665E6A73C94D2F3F39C1F6 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
+		F27A9A3D216E1E33036903B5 /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
+		FE970CFACD0A127592AC9DE9 /* CapsAwakeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsAwakeApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4DBB09087895D45683B75D6B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65D01AD8589D1AEBB43F2AAC /* CapsAwakeShared.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8B3C39A49AAC27D61C156916 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				18D752FD162210513A5ABC59 /* CapsAwakeShared.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C902BD1BB5A1D62E658C9827 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C973B3A0AFA1D540106C5936 /* CapsAwakeShared.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		061DAD5911AE46D2C07C3C84 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FE970CFACD0A127592AC9DE9 /* CapsAwakeApp.swift */,
+				E7573E195E3C92F01951608A /* main.swift */,
+				52610C3DD8ADD219641B722A /* StatusItemDotView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		0B9FF6E20E848A71CE2F208D /* CapsAwakeHelper */ = {
+			isa = PBXGroup;
+			children = (
+				185914A4AFDD306588A0F39C /* HelperService.swift */,
+				7BB83805C8ED87E151EC0E9C /* main.swift */,
+			);
+			path = CapsAwakeHelper;
+			sourceTree = "<group>";
+		};
+		0DD18DB86853A97461F51FF6 /* CapsAwakeTests */ = {
+			isa = PBXGroup;
+			children = (
+				90C9A1AC9F9075D7807AC9B9 /* IdentityTests.swift */,
+				521F0930036B66058FA897FC /* PmsetParsingTests.swift */,
+				44D33A8CBBF3C5D64CE26071 /* SafetyPolicyTests.swift */,
+				E15166D56675DF7F6D1814E3 /* WatchdogPolicyTests.swift */,
+			);
+			path = CapsAwakeTests;
+			sourceTree = "<group>";
+		};
+		304C6B0FF3AEB298BDACF221 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FFD052AEA2842953D59F35BA /* CapsAwake */,
+				0B9FF6E20E848A71CE2F208D /* CapsAwakeHelper */,
+				DEDABE87A62D729272A2B462 /* CapsAwakeShared */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		49077116FED1A7C358FFCD8A /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				0DD18DB86853A97461F51FF6 /* CapsAwakeTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		620CA857FE901A3613C00B65 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				F27A9A3D216E1E33036903B5 /* AppLog.swift */,
+				31FD403314B6D59F1C50AF3D /* Config.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		7E4057B08C47BAE92515F68A /* Hardware */ = {
+			isa = PBXGroup;
+			children = (
+				1D9360B8C80CF9271997C7F4 /* CapsLockProbe.swift */,
+				D9ED42EE4F6AAEB8451E9034 /* SleepFlagReader.swift */,
+			);
+			path = Hardware;
+			sourceTree = "<group>";
+		};
+		84125B685131AD3C577736AF /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				43BA607DC1EA5E579A29822B /* KeepAwakeEngine.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		9314C70DF59336C9EDA59928 = {
+			isa = PBXGroup;
+			children = (
+				C32E88729EB108EB1BA9CC07 /* Resources */,
+				304C6B0FF3AEB298BDACF221 /* Sources */,
+				49077116FED1A7C358FFCD8A /* Tests */,
+				DFC9BC5E0FEE2D3556E48CB3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		95070072CC33955628C743FE /* Identity */ = {
+			isa = PBXGroup;
+			children = (
+				4E4841A7FC7E33B8BA51AB4A /* Identity.swift */,
+			);
+			path = Identity;
+			sourceTree = "<group>";
+		};
+		95115094CC3AE6B67921A56F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				63F2B34F80051D3BAD9B26F9 /* HelperClient.swift */,
+				A90ABFD9BA7C1E8DC6313E7C /* LoginItems.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		AC49B0E3A5BC7A645A7E0C60 /* Policies */ = {
+			isa = PBXGroup;
+			children = (
+				5C34B63DD1582959E024F4E5 /* SafetyPolicy.swift */,
+				0110B11791950BF9E106B00E /* WatchdogPolicy.swift */,
+			);
+			path = Policies;
+			sourceTree = "<group>";
+		};
+		C32E88729EB108EB1BA9CC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5F9A95B1F1B4D0111A254925 /* AppIcon.icns */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		DE245CBD855C939B55AFF634 /* Parsing */ = {
+			isa = PBXGroup;
+			children = (
+				11000819966E6EFCD9469C22 /* Pmset.swift */,
+			);
+			path = Parsing;
+			sourceTree = "<group>";
+		};
+		DEDABE87A62D729272A2B462 /* CapsAwakeShared */ = {
+			isa = PBXGroup;
+			children = (
+				95070072CC33955628C743FE /* Identity */,
+				DE245CBD855C939B55AFF634 /* Parsing */,
+				AC49B0E3A5BC7A645A7E0C60 /* Policies */,
+				FE3CD7A5C24E49D895EEEBC5 /* Protocol */,
+				E0A5BB4A9854733080B9FA42 /* Support */,
+			);
+			path = CapsAwakeShared;
+			sourceTree = "<group>";
+		};
+		DFC9BC5E0FEE2D3556E48CB3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7494837A894F970DBE0B3A17 /* CapsAwake.app */,
+				2D4D2F52372CDBA34A5C901F /* CapsAwakeHelper */,
+				E00589E25654D23BE501C212 /* CapsAwakeShared.framework */,
+				6DF9507C543AA8B64738C0F1 /* CapsAwakeTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E0A5BB4A9854733080B9FA42 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				EB665E6A73C94D2F3F39C1F6 /* Defaults.swift */,
+				B49DE4CE647027EBD2E8A45B /* ProcessRunner.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		FE3CD7A5C24E49D895EEEBC5 /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				18E0E2C56C4899DABC5197A1 /* KeepAwakeProtocol.swift */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
+		FFD052AEA2842953D59F35BA /* CapsAwake */ = {
+			isa = PBXGroup;
+			children = (
+				061DAD5911AE46D2C07C3C84 /* App */,
+				84125B685131AD3C577736AF /* Core */,
+				7E4057B08C47BAE92515F68A /* Hardware */,
+				95115094CC3AE6B67921A56F /* Services */,
+				620CA857FE901A3613C00B65 /* Support */,
+			);
+			path = CapsAwake;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5D7E14A0A58698353EBAB62F /* CapsAwakeShared */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E9C6561B2A654B5241CBD1B /* Build configuration list for PBXNativeTarget "CapsAwakeShared" */;
+			buildPhases = (
+				B4BCE566F74217775BA4803B /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CapsAwakeShared;
+			packageProductDependencies = (
+			);
+			productName = CapsAwakeShared;
+			productReference = E00589E25654D23BE501C212 /* CapsAwakeShared.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		88D0C0D96A274EE4481F6253 /* CapsAwake */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 73DE1FF7A490D5CD0DE89FF6 /* Build configuration list for PBXNativeTarget "CapsAwake" */;
+			buildPhases = (
+				B767A1EC43DE1FE8394F3577 /* Sources */,
+				756A8254D0A8D7A8FEC76874 /* Resources */,
+				8B3C39A49AAC27D61C156916 /* Frameworks */,
+				A608C5336E2A86364E0EFDF5 /* Embed Dependencies */,
+				DF0326D995973F485B58BDC0 /* Generate helper LaunchDaemon plist */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D063C5D05486DE695AB1E6F6 /* PBXTargetDependency */,
+				B1211FF768A990EA3ED7A32F /* PBXTargetDependency */,
+			);
+			name = CapsAwake;
+			packageProductDependencies = (
+			);
+			productName = CapsAwake;
+			productReference = 7494837A894F970DBE0B3A17 /* CapsAwake.app */;
+			productType = "com.apple.product-type.application";
+		};
+		935095FDBE56CD66008764E6 /* CapsAwakeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C745A8B42D0B878DFA002928 /* Build configuration list for PBXNativeTarget "CapsAwakeTests" */;
+			buildPhases = (
+				92031EA9EC75200A83074E66 /* Sources */,
+				C902BD1BB5A1D62E658C9827 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				25C0A541E391100CF13A8E17 /* PBXTargetDependency */,
+			);
+			name = CapsAwakeTests;
+			packageProductDependencies = (
+			);
+			productName = CapsAwakeTests;
+			productReference = 6DF9507C543AA8B64738C0F1 /* CapsAwakeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B17A2A165A2E6D1EEAEE97C4 /* CapsAwakeHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D9EFD2DB5CA33DD10E7D194D /* Build configuration list for PBXNativeTarget "CapsAwakeHelper" */;
+			buildPhases = (
+				4FEC4B0B25115A02DCAB283C /* Sources */,
+				4DBB09087895D45683B75D6B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4161FC731B93167DD80035D9 /* PBXTargetDependency */,
+			);
+			name = CapsAwakeHelper;
+			packageProductDependencies = (
+			);
+			productName = CapsAwakeHelper;
+			productReference = 2D4D2F52372CDBA34A5C901F /* CapsAwakeHelper */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D70AAB0852942E5CDB3264B2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					5D7E14A0A58698353EBAB62F = {
+						DevelopmentTeam = 3UKH2QRFKZ;
+						ProvisioningStyle = Automatic;
+					};
+					88D0C0D96A274EE4481F6253 = {
+						DevelopmentTeam = 3UKH2QRFKZ;
+						ProvisioningStyle = Automatic;
+					};
+					935095FDBE56CD66008764E6 = {
+						DevelopmentTeam = 3UKH2QRFKZ;
+						ProvisioningStyle = Automatic;
+					};
+					B17A2A165A2E6D1EEAEE97C4 = {
+						DevelopmentTeam = 3UKH2QRFKZ;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = D5ACAEFAFB2D9B16F0A02E1D /* Build configuration list for PBXProject "CapsAwake" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 9314C70DF59336C9EDA59928;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DFC9BC5E0FEE2D3556E48CB3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5D7E14A0A58698353EBAB62F /* CapsAwakeShared */,
+				88D0C0D96A274EE4481F6253 /* CapsAwake */,
+				B17A2A165A2E6D1EEAEE97C4 /* CapsAwakeHelper */,
+				935095FDBE56CD66008764E6 /* CapsAwakeTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		756A8254D0A8D7A8FEC76874 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CB377316AF10910E6C01B56 /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DF0326D995973F485B58BDC0 /* Generate helper LaunchDaemon plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate helper LaunchDaemon plist";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\nAPP_ID=\"${PRODUCT_BUNDLE_IDENTIFIER}\"\nHELPER_ID=\"${APP_ID}.helper\"\nDEST=\"${CODESIGNING_FOLDER_PATH}/Contents/Library/LaunchDaemons\"\nmkdir -p \"$DEST\"\nPLIST=\"${DEST}/${HELPER_ID}.plist\"\nprintf '%s' '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n    <key>Label</key><string>'\"${HELPER_ID}\"'</string>\n    <key>BundleProgram</key><string>Contents/MacOS/CapsAwakeHelper</string>\n    <key>MachServices</key><dict><key>'\"${HELPER_ID}\"'</key><true/></dict>\n    <key>AssociatedBundleIdentifiers</key><array><string>'\"${APP_ID}\"'</string></array>\n    <key>EnvironmentVariables</key><dict><key>CAPSAWAKE_MACH_LABEL</key><string>'\"${HELPER_ID}\"'</string></dict>\n    <key>StandardOutPath</key><string>/Library/Logs/CapsAwake/helper-stdout.log</string>\n    <key>StandardErrorPath</key><string>/Library/Logs/CapsAwake/helper-stderr.log</string>\n</dict>\n</plist>' > \"$PLIST\"\nplutil -lint \"$PLIST\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4FEC4B0B25115A02DCAB283C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				36657D37FF2859C5687C3E66 /* HelperService.swift in Sources */,
+				556E336B003983344C5B41AB /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92031EA9EC75200A83074E66 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FE17616903D55D1B2EBA9900 /* IdentityTests.swift in Sources */,
+				72CBEA245B9325676223444C /* PmsetParsingTests.swift in Sources */,
+				0F2775E1EDF51FBFCE07AA34 /* SafetyPolicyTests.swift in Sources */,
+				A7DCAE6E5F0C5006B5A6BF42 /* WatchdogPolicyTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B4BCE566F74217775BA4803B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7A085FF8AFD8469FB0BA40E1 /* Defaults.swift in Sources */,
+				18DF9E7CF76C20077C6372C0 /* Identity.swift in Sources */,
+				8591711B01C0E5354BE5BA76 /* KeepAwakeProtocol.swift in Sources */,
+				1CD7596FBF7236F0FCE311E8 /* Pmset.swift in Sources */,
+				B61B9B5EC746CB865859C62A /* ProcessRunner.swift in Sources */,
+				A4DA263AA3818C8F0064ECB6 /* SafetyPolicy.swift in Sources */,
+				F0558646AAC29C32199A6FE1 /* WatchdogPolicy.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B767A1EC43DE1FE8394F3577 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B3DE18F91AF88ADC5CEE2BDD /* AppLog.swift in Sources */,
+				83F73D490342F7EF85422667 /* CapsAwakeApp.swift in Sources */,
+				A4D21D4F17E2EE93C3A8F794 /* CapsLockProbe.swift in Sources */,
+				A336EA18C5C2DDF24863BFE9 /* Config.swift in Sources */,
+				8EBCE18F259EC50F166B4D19 /* HelperClient.swift in Sources */,
+				2A1A2AC43AB0A1A39C9CF211 /* KeepAwakeEngine.swift in Sources */,
+				23F6D9DCA78158B4946AE436 /* LoginItems.swift in Sources */,
+				5BC498CA37A0F0FE693CC60C /* SleepFlagReader.swift in Sources */,
+				09BB5A09A71C3EAF2AACBCFD /* StatusItemDotView.swift in Sources */,
+				7C8D667E0E1CC9EA8290E8EB /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		25C0A541E391100CF13A8E17 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5D7E14A0A58698353EBAB62F /* CapsAwakeShared */;
+			targetProxy = 3C2C0910168226A818C4B9FB /* PBXContainerItemProxy */;
+		};
+		4161FC731B93167DD80035D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5D7E14A0A58698353EBAB62F /* CapsAwakeShared */;
+			targetProxy = 999BBF34756BD32BDB3B8BED /* PBXContainerItemProxy */;
+		};
+		B1211FF768A990EA3ED7A32F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B17A2A165A2E6D1EEAEE97C4 /* CapsAwakeHelper */;
+			targetProxy = EC13FCFD09449387B8467AD0 /* PBXContainerItemProxy */;
+		};
+		D063C5D05486DE695AB1E6F6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5D7E14A0A58698353EBAB62F /* CapsAwakeShared */;
+			targetProxy = 6D9DE657D14C04D3B58200E5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0CDE5BD1FB7D0AE09C27F93A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				PRODUCT_BUNDLE_IDENTIFIER = com.piszeprogramy.capsawake.shared;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		2F6E01048BDD2BF5A08C3A79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.piszeprogramy.capsawake.helper;
+				PRODUCT_NAME = CapsAwakeHelper;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		6BC946DAAB378C410735614F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.piszeprogramy.capsawake.tests;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		6FEDCF77ACE1FD463FAE6471 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/CapsAwake/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.piszeprogramy.capsawake;
+				PRODUCT_NAME = CapsAwake;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		8601A353F2877F1EFADE78B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.piszeprogramy.capsawake.tests;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B030832C98BF9872FE4725BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				PRODUCT_BUNDLE_IDENTIFIER = com.piszeprogramy.capsawake.shared;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		B932D37C9E369ED4E9B059B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/CapsAwake/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.piszeprogramy.capsawake;
+				PRODUCT_NAME = CapsAwake;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D7924AE0FAF3C386E1003065 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3UKH2QRFKZ;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		DCE21253A81D840365BAA066 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.piszeprogramy.capsawake.helper;
+				PRODUCT_NAME = CapsAwakeHelper;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		F45679B0F4E2E1B16167753D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3UKH2QRFKZ;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0E9C6561B2A654B5241CBD1B /* Build configuration list for PBXNativeTarget "CapsAwakeShared" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0CDE5BD1FB7D0AE09C27F93A /* Debug */,
+				B030832C98BF9872FE4725BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		73DE1FF7A490D5CD0DE89FF6 /* Build configuration list for PBXNativeTarget "CapsAwake" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B932D37C9E369ED4E9B059B2 /* Debug */,
+				6FEDCF77ACE1FD463FAE6471 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C745A8B42D0B878DFA002928 /* Build configuration list for PBXNativeTarget "CapsAwakeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8601A353F2877F1EFADE78B8 /* Debug */,
+				6BC946DAAB378C410735614F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D5ACAEFAFB2D9B16F0A02E1D /* Build configuration list for PBXProject "CapsAwake" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F45679B0F4E2E1B16167753D /* Debug */,
+				D7924AE0FAF3C386E1003065 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D9EFD2DB5CA33DD10E7D194D /* Build configuration list for PBXNativeTarget "CapsAwakeHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F6E01048BDD2BF5A08C3A79 /* Debug */,
+				DCE21253A81D840365BAA066 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D70AAB0852942E5CDB3264B2 /* Project object */;
+}

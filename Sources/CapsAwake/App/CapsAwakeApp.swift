@@ -1,5 +1,7 @@
 import AppKit
 import Foundation
+import IOKit.ps
+import IOKit.pwr_mgt
 import ServiceManagement
 import CapsAwakeShared
 
@@ -14,6 +16,15 @@ final class CapsAwakeApp: NSObject, NSApplicationDelegate {
     private var signalSources: [DispatchSourceSignal] = []
 
     private var lastPresentedAlert: AlertReason?
+    private var activeAlertWindow: NSWindow?
+
+    /// IOKit power assertions held while Caps Lock is on to prevent display
+    /// sleep, screensaver activation, and idle lock screen / session logout.
+    private var displayAssertionID: IOPMAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
+    private var systemAssertionID: IOPMAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
+    private var userActivityAssertionID: IOPMAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
+    private var holdingSessionAssertions = false
+    private var nextUserActivityAt = Date.distantPast
 
     /// When false (duplicate instance), termination must NOT issue "off" —
     /// that would kill the primary instance's keep-awake mid-session.
@@ -33,6 +44,7 @@ final class CapsAwakeApp: NSObject, NSApplicationDelegate {
             readFlag: { SleepFlagReader.currentState() },
             safetySample: { Self.currentSafetySample() },
             client: helperClient,
+            setSessionAwake: { [weak self] awake in self?.updateSessionAssertions(awake: awake) },
             onDisplay: { [weak self] display in self?.apply(display: display) }
         )
         self.engine = engine
@@ -46,12 +58,20 @@ final class CapsAwakeApp: NSObject, NSApplicationDelegate {
         }
         timer.tolerance = 0.05
         RunLoop.main.add(timer, forMode: .common)
+        RunLoop.main.add(timer, forMode: .modalPanel)
+        RunLoop.main.add(timer, forMode: .eventTracking)
         pollTimer = timer
 
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
             selector: #selector(didWakeFromSleep),
             name: NSWorkspace.didWakeNotification,
+            object: nil
+        )
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(willPowerOff),
+            name: NSWorkspace.willPowerOffNotification,
             object: nil
         )
 
@@ -94,16 +114,32 @@ final class CapsAwakeApp: NSObject, NSApplicationDelegate {
 
         guard let reason = display.alert else {
             lastPresentedAlert = nil
+            if let window = activeAlertWindow {
+                activeAlertWindow = nil
+                NSApp.abortModal()
+                window.orderOut(nil)
+            }
             return
         }
         guard reason != lastPresentedAlert else { return }
         lastPresentedAlert = reason
         AppLog.error("alert: \(String(describing: reason))")
-        presentAlert(for: reason)
+        // Defer outside the current poll() tick so the engine finishes its
+        // evaluation and heartbeat cycle before any UI work runs.
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.lastPresentedAlert == reason else { return }
+            self.presentAlert(for: reason)
+        }
     }
 
     private func presentAlert(for reason: AlertReason) {
-        NSApp.activate()
+        if let window = activeAlertWindow {
+            activeAlertWindow = nil
+            NSApp.abortModal()
+            window.orderOut(nil)
+        }
+
+        NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
         alert.alertStyle = .warning
         switch reason {
@@ -111,25 +147,29 @@ final class CapsAwakeApp: NSObject, NSApplicationDelegate {
             alert.messageText = "CapsAwake helper needs approval"
             alert.informativeText = "Approve the helper in System Settings → General → Login Items & Extensions. Until then, Caps Lock cannot hold the Mac awake."
             alert.addButton(withTitle: "Open System Settings")
-            alert.addButton(withTitle: "Quit")
+            alert.addButton(withTitle: "Dismiss")
         case .helperNotInstalled:
             alert.messageText = "CapsAwake helper is missing"
             alert.informativeText = "Reinstall the app with scripts/install.sh. The helper flips the system sleep flag as root."
             alert.addButton(withTitle: "Reveal Logs")
-            alert.addButton(withTitle: "Quit")
+            alert.addButton(withTitle: "Dismiss")
         case .applyFailed:
             alert.messageText = "CapsAwake cannot change the sleep setting"
             alert.informativeText = "See the log for the reason. The app keeps retrying."
             alert.addButton(withTitle: "Reveal Logs")
-            alert.addButton(withTitle: "Quit")
+            alert.addButton(withTitle: "Dismiss")
         case .safetyHold:
             alert.messageText = "CapsAwake turned itself off"
             alert.informativeText = "The battery is low or the Mac is hot. Turn Caps Lock off, then on, to retry."
             alert.addButton(withTitle: "OK")
-            alert.addButton(withTitle: "Quit")
         }
 
+        activeAlertWindow = alert.window
+        // Run the alert on the next run-loop turn; pollTimer is registered in
+        // `.modalPanel` as well as `.common`, so polling and heartbeats continue
+        // uninterrupted while the alert is visible.
         let response = alert.runModal()
+        activeAlertWindow = nil
         if response == .alertFirstButtonReturn {
             switch reason {
             case .requiresApproval:
@@ -139,8 +179,6 @@ final class CapsAwakeApp: NSObject, NSApplicationDelegate {
             case .safetyHold:
                 break
             }
-        } else if response == .alertSecondButtonReturn {
-            NSApp.terminate(nil)
         }
     }
 
@@ -192,14 +230,111 @@ final class CapsAwakeApp: NSObject, NSApplicationDelegate {
         engine?.wake()
     }
 
+    @objc private func willPowerOff() {
+        shutdownOnceIfNeeded()
+    }
+
+    // MARK: Session & display keep-awake assertions
+
+    /// Holds IOKit display/idle assertions and periodically declares user
+    /// activity while Caps Lock is active so macOS does not dim the display,
+    /// start the screen saver, lock the session to loginwindow, or trigger
+    /// inactivity auto-logout.
+    private func updateSessionAssertions(awake: Bool) {
+        let now = Date()
+        if awake {
+            if !holdingSessionAssertions {
+                holdingSessionAssertions = true
+                let reason = "CapsAwake — Caps Lock active" as CFString
+                var dispID = IOPMAssertionID(kIOPMNullAssertionID)
+                if IOPMAssertionCreateWithName(
+                    kIOPMAssertionTypePreventUserIdleDisplaySleep as CFString,
+                    IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                    reason,
+                    &dispID
+                ) == kIOReturnSuccess {
+                    displayAssertionID = dispID
+                }
+                var sysID = IOPMAssertionID(kIOPMNullAssertionID)
+                if IOPMAssertionCreateWithName(
+                    kIOPMAssertionTypePreventUserIdleSystemSleep as CFString,
+                    IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                    reason,
+                    &sysID
+                ) == kIOReturnSuccess {
+                    systemAssertionID = sysID
+                }
+                nextUserActivityAt = .distantPast
+            }
+            if now >= nextUserActivityAt {
+                nextUserActivityAt = now + 30
+                let reason = "CapsAwake — Caps Lock active" as CFString
+                _ = IOPMAssertionDeclareUserActivity(
+                    reason,
+                    kIOPMUserActiveLocal,
+                    &userActivityAssertionID
+                )
+            }
+        } else if holdingSessionAssertions {
+            holdingSessionAssertions = false
+            if displayAssertionID != IOPMAssertionID(kIOPMNullAssertionID) {
+                IOPMAssertionRelease(displayAssertionID)
+                displayAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
+            }
+            if systemAssertionID != IOPMAssertionID(kIOPMNullAssertionID) {
+                IOPMAssertionRelease(systemAssertionID)
+                systemAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
+            }
+            if userActivityAssertionID != IOPMAssertionID(kIOPMNullAssertionID) {
+                IOPMAssertionRelease(userActivityAssertionID)
+                userActivityAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
+            }
+        }
+    }
+
     // MARK: Safety inputs
 
     private static func currentSafetySample() -> SafetySample {
+        if let iokitSample = readPowerSourceViaIOKit() {
+            return iokitSample
+        }
         let batt = ProcessRunner.run("/usr/bin/pmset", ["-g", "batt"]).stdout
         let percent = Self.parseBatteryPercent(batt) ?? 100
         let onAC = batt.localizedCaseInsensitiveContains("AC Power")
         return SafetySample(
             batteryPercent: percent,
+            onAC: onAC,
+            thermalState: ProcessInfo.processInfo.thermalState
+        )
+    }
+
+    private static func readPowerSourceViaIOKit() -> SafetySample? {
+        guard let blob = IOPSCopyPowerSourcesInfo()?.takeRetainedValue(),
+              let list = IOPSCopyPowerSourcesList(blob)?.takeRetainedValue() as? [CFTypeRef] else {
+            return nil
+        }
+
+        let providingType = IOPSGetProvidingPowerSourceType(blob)?.takeUnretainedValue() as String?
+        var onAC = (providingType == (kIOPMACPowerKey as String))
+        var percent: Int?
+
+        for source in list {
+            guard let desc = IOPSGetPowerSourceDescription(blob, source)?.takeUnretainedValue() as? [String: Any] else {
+                continue
+            }
+            if let state = desc[kIOPSPowerSourceStateKey as String] as? String,
+               state == (kIOPSACPowerValue as String) {
+                onAC = true
+            }
+            if let cur = desc[kIOPSCurrentCapacityKey as String] as? Int,
+               let max = desc[kIOPSMaxCapacityKey as String] as? Int,
+               max > 0 {
+                percent = Int((Double(cur) / Double(max) * 100.0).rounded())
+            }
+        }
+
+        return SafetySample(
+            batteryPercent: percent ?? 100,
             onAC: onAC,
             thermalState: ProcessInfo.processInfo.thermalState
         )

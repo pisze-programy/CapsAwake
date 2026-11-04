@@ -17,6 +17,7 @@ enum AppLog {
     private static let rotationLimit: UInt64 = 1_000_000
 
     private static let queue = DispatchQueue(label: "\(subsystem).applog")
+    private static let dateFormatter = ISO8601DateFormatter()
 
     static func info(_ message: String) { write(level: "INFO", message: message) }
     static func warning(_ message: String) { write(level: "WARN", message: message) }
@@ -28,8 +29,9 @@ enum AppLog {
         case "WARN": osLogger.warning("\(message, privacy: .public)")
         default: osLogger.info("\(message, privacy: .public)")
         }
-        let line = "\(ISO8601DateFormatter().string(from: Date())) \(level) \(message)\n"
+        let timestamp = Date()
         queue.async {
+            let line = "\(dateFormatter.string(from: timestamp)) \(level) \(message)\n"
             persist(line)
         }
     }
@@ -41,17 +43,17 @@ enum AppLog {
                 withIntermediateDirectories: true
             )
             if let size = (try? FileManager.default.attributesOfItem(atPath: fileURL.path))?[.size] as? UInt64,
-               size > rotationLimit,
-               !FileManager.default.fileExists(atPath: backupURL.path) {
+               size > rotationLimit {
+                try? FileManager.default.removeItem(at: backupURL)
                 try FileManager.default.moveItem(at: fileURL, to: backupURL)
             }
             if !FileManager.default.fileExists(atPath: fileURL.path) {
                 try line.data(using: .utf8)?.write(to: fileURL)
             } else {
                 let handle = try FileHandle(forWritingTo: fileURL)
+                defer { try? handle.close() }
                 try handle.seekToEnd()
                 try handle.write(contentsOf: Data(line.utf8))
-                try handle.close()
             }
         } catch {
             osLogger.error("log write failed: \(error.localizedDescription, privacy: .public)")

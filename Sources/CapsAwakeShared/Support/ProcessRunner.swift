@@ -21,27 +21,38 @@ public struct CommandOutcome: Equatable, Sendable {
 /// command ever produces large volumes.
 public enum ProcessRunner {
     public static func run(_ executable: String, _ arguments: [String]) -> CommandOutcome {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: executable)
-        process.arguments = arguments
-        let stdoutPipe = Pipe()
-        let stderrPipe = Pipe()
-        process.standardOutput = stdoutPipe
-        process.standardError = stderrPipe
+        autoreleasepool {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: executable)
+            process.arguments = arguments
+            let stdoutPipe = Pipe()
+            let stderrPipe = Pipe()
+            process.standardOutput = stdoutPipe
+            process.standardError = stderrPipe
 
-        do {
-            try process.run()
-        } catch {
-            return CommandOutcome(status: -1, stdout: "", stderr: "\(error)")
+            let stdoutHandle = stdoutPipe.fileHandleForReading
+            let stderrHandle = stderrPipe.fileHandleForReading
+            defer {
+                try? stdoutHandle.close()
+                try? stderrHandle.close()
+            }
+
+            do {
+                try process.run()
+            } catch {
+                return CommandOutcome(status: -1, stdout: "", stderr: "\(error)")
+            }
+            process.waitUntilExit()
+
+            let stdoutData = (try? stdoutHandle.readToEnd()) ?? Data()
+            let stderrData = (try? stderrHandle.readToEnd()) ?? Data()
+            let stdout = String(data: stdoutData, encoding: .utf8) ?? ""
+            let stderr = String(data: stderrData, encoding: .utf8) ?? ""
+            return CommandOutcome(
+                status: process.terminationStatus,
+                stdout: stdout.trimmingCharacters(in: .whitespacesAndNewlines),
+                stderr: stderr.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
         }
-        process.waitUntilExit()
-
-        let stdout = String(data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-        let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-        return CommandOutcome(
-            status: process.terminationStatus,
-            stdout: stdout.trimmingCharacters(in: .whitespacesAndNewlines),
-            stderr: stderr.trimmingCharacters(in: .whitespacesAndNewlines)
-        )
     }
 }

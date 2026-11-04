@@ -27,6 +27,12 @@ final class HelperListenerDelegate: NSObject, NSXPCListenerDelegate {
         newConnection.setCodeSigningRequirement(requirement)
         newConnection.exportedInterface = NSXPCInterface(with: KeepAwakeHelperProtocol.self)
         newConnection.exportedObject = service
+        newConnection.invalidationHandler = { [weak newConnection] in
+            newConnection?.exportedObject = nil
+        }
+        newConnection.interruptionHandler = { [weak newConnection] in
+            newConnection?.invalidate()
+        }
         newConnection.resume()
         return true
     }
@@ -44,6 +50,7 @@ final class HelperService: NSObject, KeepAwakeHelperProtocol {
 
     private let stateQueue = DispatchQueue(label: "com.piszeprogramy.capsawake.helper.state")
     private var lastHeartbeat = Date.distantPast
+    private var watchdogArmed = false
     private var watchdogTimer: DispatchSourceTimer?
 
     override init() {
@@ -54,6 +61,7 @@ final class HelperService: NSObject, KeepAwakeHelperProtocol {
             // heartbeating after a daemon restart; a dead app won't, and the
             // watchdog clears the flag on the first stale tick.
             lastHeartbeat = Date()
+            watchdogArmed = true
             log.info("adopted running flag at startup; keep awake until app reconnects")
         }
         startWatchdog()
@@ -75,6 +83,7 @@ final class HelperService: NSObject, KeepAwakeHelperProtocol {
             let applied = Self.currentFlagIsEnabled() == enabled
             if applied {
                 lastHeartbeat = Date()
+                watchdogArmed = enabled
                 log.info("set disablesleep=\(enabled ? "1" : "0") ok")
                 reply(true, nil)
             } else {
@@ -87,6 +96,7 @@ final class HelperService: NSObject, KeepAwakeHelperProtocol {
     func heartbeat(withReply reply: @escaping (Bool) -> Void) {
         stateQueue.async { [self] in
             lastHeartbeat = Date()
+            watchdogArmed = true
             reply(true)
         }
     }
@@ -110,20 +120,24 @@ final class HelperService: NSObject, KeepAwakeHelperProtocol {
     }
 
     private func watchdogTick() {
-        let flagOn = Self.currentFlagIsEnabled()
+        guard watchdogArmed else { return }
         let heartbeatAge = Date().timeIntervalSince(lastHeartbeat)
+        guard heartbeatAge >= CapsAwakeDefaults.watchdogTimeout else { return }
+        let flagOn = Self.currentFlagIsEnabled()
         switch WatchdogPolicy.decide(
             flagEnabled: flagOn,
             heartbeatAge: heartbeatAge,
             timeout: CapsAwakeDefaults.watchdogTimeout
         ) {
         case .idle:
-            break
+            watchdogArmed = false
         case .keep:
             break
         case .restore:
             log.warning("watchdog restoring sleep: no heartbeat for \(heartbeatAge)s")
-            _ = Self.runPmset(disableSleep: false)
+            if Self.runPmset(disableSleep: false).succeeded, !Self.currentFlagIsEnabled() {
+                watchdogArmed = false
+            }
         }
     }
 

@@ -44,6 +44,7 @@ final class KeepAwakeEngine {
     private let readFlag: () -> SleepDisabledState
     private let safetySample: () -> SafetySample
     private let client: HelperClient
+    private let setSessionAwake: (Bool) -> Void
     private let onDisplay: (DisplayState) -> Void
 
     private var lastCapsOn: Bool?
@@ -70,20 +71,24 @@ final class KeepAwakeEngine {
     private var lastDisplay: DisplayState?
     private var lastLoggedHealth: SMAppService.Status?
     private var nextRepairAt = Date.distantPast
+    private let startedAt = Date()
+    private let startupHelperGrace: TimeInterval = 5
 
-    private let unreadableCapsGrace: TimeInterval = 2
+    private let unreadableCapsGrace: TimeInterval = 5
 
     init(
         readCaps: @escaping () -> Bool?,
         readFlag: @escaping () -> SleepDisabledState,
         safetySample: @escaping () -> SafetySample,
         client: HelperClient,
+        setSessionAwake: @escaping (Bool) -> Void = { _ in },
         onDisplay: @escaping (DisplayState) -> Void
     ) {
         self.readCaps = readCaps
         self.readFlag = readFlag
         self.safetySample = safetySample
         self.client = client
+        self.setSessionAwake = setSessionAwake
         self.onDisplay = onDisplay
         nextReadAt = .distantPast
         nextHealthAt = .distantPast
@@ -99,6 +104,7 @@ final class KeepAwakeEngine {
         refreshHelperHealth(now: now)
 
         let want = currentWant(now: now)
+        setSessionAwake(want)
         evaluate(now: now, want: want)
         sendHeartbeatIfNeeded(now: now, want: want)
         render(now: now, want: want)
@@ -116,12 +122,14 @@ final class KeepAwakeEngine {
     /// a short deadline passes — a lost message would otherwise leave the flag
     /// set for up to the 90 s watchdog window after a normal quit.
     func shutdownBlocking(timeout: TimeInterval = 2) {
+        setSessionAwake(false)
         guard client.daemonStatus == .enabled else { return }
         var finished = false
         client.setKeepAwake(false) { _, _ in finished = true }
         let deadline = Date().addingTimeInterval(timeout)
         while !finished, Date() < deadline {
             RunLoop.current.run(mode: .default, before: Date().addingTimeInterval(0.05))
+            RunLoop.current.run(mode: .modalPanel, before: Date().addingTimeInterval(0.01))
         }
     }
 
@@ -321,10 +329,17 @@ final class KeepAwakeEngine {
         if safetyHold {
             state = DisplayState(dot: .error, tooltip: Config.tooltipSafety, alert: .safetyHold)
         } else if client.daemonStatus != .enabled {
-            let reason: AlertReason = client.daemonStatus == .requiresApproval
-                ? .requiresApproval
-                : .helperNotInstalled
-            state = DisplayState(dot: .error, tooltip: Config.tooltipUnavailable, alert: reason)
+            let status = client.daemonStatus
+            if status == .requiresApproval {
+                state = DisplayState(dot: .error, tooltip: Config.tooltipUnavailable, alert: .requiresApproval)
+            } else if now.timeIntervalSince(startedAt) < startupHelperGrace {
+                // During startup or post-install re-registration, SMAppService
+                // briefly transitions through .notRegistered/.notFound before
+                // settling on .enabled. Keep the dot quiet during this window.
+                state = DisplayState(dot: .off, tooltip: Config.tooltipPending, alert: nil)
+            } else {
+                state = DisplayState(dot: .error, tooltip: Config.tooltipUnavailable, alert: .helperNotInstalled)
+            }
         } else if !capsAvailableNow {
             state = DisplayState(dot: .error, tooltip: Config.tooltipFailed, alert: nil)
         } else if want && lastFlag == .enabled {

@@ -13,8 +13,16 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APP_BUNDLE="/Applications/$APP_NAME.app"
 LOG_DIR="/Library/Logs/CapsAwake"
 
-echo "==> building signed app"
-BUILT="$("$ROOT_DIR/scripts/build-app.sh" | /usr/bin/tail -1)"
+# Build as the regular user so codesign can read the user's login keychain even
+# if the user accidentally ran `sudo ./scripts/install.sh`.
+if [[ $EUID -eq 0 && -n "${SUDO_USER:-}" ]]; then
+  echo "==> fixing .derived ownership and building as $SUDO_USER (so codesign can access login keychain)"
+  /usr/sbin/chown -R "$SUDO_USER" "$ROOT_DIR/.derived" 2>/dev/null || true
+  BUILT="$(sudo -u "$SUDO_USER" "$ROOT_DIR/scripts/build-app.sh" | /usr/bin/tail -1)"
+else
+  echo "==> building signed app"
+  BUILT="$("$ROOT_DIR/scripts/build-app.sh" | /usr/bin/tail -1)"
+fi
 
 echo "==> stopping running instance (so the new binary is the one that starts)"
 /usr/bin/pkill -x "$APP_NAME" 2>/dev/null || true
@@ -30,6 +38,10 @@ sudo /usr/sbin/chown -R root:wheel "$APP_BUNDLE" "$LOG_DIR"
 /usr/bin/xattr -dr com.apple.quarantine "$APP_BUNDLE" 2>/dev/null || true
 
 echo "==> launching (approve the helper in System Settings if prompted)"
-/usr/bin/open "$APP_BUNDLE"
+if [[ $EUID -eq 0 && -n "${SUDO_USER:-}" ]]; then
+  sudo -u "$SUDO_USER" /usr/bin/open "$APP_BUNDLE"
+else
+  /usr/bin/open "$APP_BUNDLE"
+fi
 
 echo "Installed $APP_NAME. The status dot appears in the menu bar."

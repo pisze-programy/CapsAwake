@@ -46,7 +46,7 @@ final class HelperListenerDelegate: NSObject, NSXPCListenerDelegate {
 /// (and the app is dead too), the fresh process adopts the flag and still
 /// clears it — the Mac cannot stay stuck awake through a double failure.
 final class HelperService: NSObject, KeepAwakeHelperProtocol {
-    private static let versionString = "0.1.0"
+    private static let versionString = "0.1.1"
 
     private let stateQueue = DispatchQueue(label: "com.piszeprogramy.capsawake.helper.state")
     private var lastHeartbeat = Date.distantPast
